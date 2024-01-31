@@ -34,6 +34,9 @@ resource "aws_autoscaling_group" "terra-prod"{
     launch_configuration = aws_launch_configuration.terra-prod.name
     vpc_zone_identifier = data.aws_subnets.default.ids
 
+    target_group_arns = [aws_lb_target_group.asg.arn]
+    health_check_type = "ELB" # more robust check compared to EC2 type
+
     min_size = 2
     max_size = 10
 
@@ -135,5 +138,24 @@ resource "aws_lb_target_group" "asg" {
         timeout = 3
         healthy_threshold = 2
         unhealthy_threshold = 2
+    }
+}
+
+# create listener rules using the aws_lb_listener_rule resource
+# adds a listener rule that sends requests that match any path to the target group
+# that contains your ASG
+
+resource "aws_lb_listener_rule" "asg" {
+    listener_arn = aws_lb_listener.http.arn
+    priority = 100
+
+    condition {
+        path_pattern {
+            values = ["*"]
+        }
+    }
+    action {
+        type = "forward"
+        target_group_arn = aws_lb_target_group.asg.arn
     }
 }
