@@ -71,3 +71,35 @@ data "aws_subnets" "default" {
         values = [data.aws_vpcs.default.ids[0]]
     }
 }
+
+# create an application load balancer (ALB) using aws_lb resource
+resource "aws_lb" "terra-prod" {
+    name = "terraform-asg-prod"
+    load_balancer_type = "application"
+    subnets = data.aws_subnets.default.ids
+}
+
+# define a listener for the ALB using the aws_lb_listener
+resource "aws_lb_listener" "http" {
+    load_balancer_arn = aws_lb.terra-prod.arn
+    port = 80
+    protocol = "HTTP"
+    # By default, return a simple 404 page
+    default_action {
+        type = "fixed-response"
+
+        fixed_response {
+            content_type = "text/plain"
+            message_body = "404: page not found"
+            status_code = 404
+        }
+
+    }
+}
+
+#create a security group for the ALB to allow incoming and outgoing traffic
+
+resource "aws_security_group" "alb" {
+    
+}
+
