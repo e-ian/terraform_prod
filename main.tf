@@ -54,10 +54,11 @@ variable "server_port" {
   description = "The port the server will use for HTTP requests"
 }
 
-# output "public_ip" {
-#   value       = aws_launch_configuration.terra-prod.public_ip
-#   description = "The public ip address of the webserver"
-# }
+# output to show the DNS name of the ALB
+output "alb_dns_name" {
+  value       = aws_lb.terra-prod.dns_name
+  description = "The domain name of the load balancer"
+}
 
 # create data source
 
