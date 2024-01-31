@@ -77,6 +77,7 @@ resource "aws_lb" "terra-prod" {
     name = "terraform-asg-prod"
     load_balancer_type = "application"
     subnets = data.aws_subnets.default.ids
+    security_groups = [aws_security_group.alb.id]
 }
 
 # define a listener for the ALB using the aws_lb_listener
@@ -118,3 +119,21 @@ resource "aws_security_group" "alb" {
     }
 }
 
+# create a target group for ASG using aws_lb_target_group resource
+
+resource "aws_lb_target_group" "asg" {
+    name = "terraform-asg-prod"
+    port = var.server_port
+    protocol = "HTTP"
+    vpc_id = data.aws_vpcs.default.id
+
+    health_check {
+        path = "/"
+        protocol = "HTTP"
+        matcher = "200"
+        interval = 15
+        timeout = 3
+        healthy_threshold = 2
+        unhealthy_threshold = 2
+    }
+}
