@@ -129,7 +129,7 @@ resource "aws_lb_target_group" "asg" {
     name = "terraform-asg-prod"
     port = var.server_port
     protocol = "HTTP"
-    vpc_id = data.aws_vpcs.default.id
+    vpc_id = data.aws_vpcs.default.ids[0]
 
     health_check {
         path = "/"
