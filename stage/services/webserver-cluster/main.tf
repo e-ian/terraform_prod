@@ -156,3 +156,13 @@ terraform {
     }
     
 }
+
+# read data from datastores/mysql/terraform.tfstate
+data "terraform_remote_state" "db" {
+    backend = "s3"
+
+    config = {
+        bucket = "terra-prod-state"
+        key = "stage/datastores/mysql/terraform.tfstate"
+    }
+}
