@@ -48,17 +48,6 @@ resource "aws_autoscaling_group" "terra-prod"{
 
 }
 
-variable "server_port" {
-  type        = number
-  default     = 8080
-  description = "The port the server will use for HTTP requests"
-}
-
-# output to show the DNS name of the ALB
-output "alb_dns_name" {
-  value       = aws_lb.terra-prod.dns_name
-  description = "The domain name of the load balancer"
-}
 
 # create data source
 
@@ -159,4 +148,11 @@ resource "aws_lb_listener_rule" "asg" {
         type = "forward"
         target_group_arn = aws_lb_target_group.asg.arn
     }
+}
+
+terraform {
+    backend "s3" {
+      key = "stage/services/webserver-cluster/terraform.tfstate"
+    }
+    
 }
